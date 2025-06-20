@@ -1,187 +1,187 @@
-# 🤖 AI-Рекрутер
+# 🤖 AI Recruiter
 
-Умная система подбора персонала с использованием искусственного интеллекта и LangChain JS.
+An intelligent personnel selection system using artificial intelligence and LangChain JS.
 
-## 🚀 Возможности
+## 🚀 Features
 
-- **AI-Ассистент для рекрутеров**: Интеллектуальный чат-бот, который помогает формулировать требования к кандидатам и задает уточняющие вопросы
-- **Форма для кандидатов**: Удобная веб-форма для подачи заявок фронтенд разработчиков
-- **Умный поиск**: Поиск кандидатов по позиции, опыту и навыкам
-- **Сохранение истории**: Все разговоры с AI и анкеты сохраняются в базе данных
-- **Красивый интерфейс**: Современный responsive дизайн
+- **AI Assistant for Recruiters**: An intelligent chatbot that helps formulate candidate requirements and asks clarifying questions.
+- **Candidate Form**: A convenient web form for frontend developers to submit applications.
+- **Smart Search**: Search for candidates by position, experience, and skills.
+- **History Saving**: All conversations with the AI and application forms are saved in the database.
+- **Beautiful Interface**: Modern responsive design.
 
-## 🛠 Технологии
+## 🛠 Technologies
 
 - **Backend**: Node.js, Express.js
 - **AI**: LangChain JS + OpenAI GPT-3.5
-- **База данных**: SQLite
+- **Database**: SQLite
 - **Frontend**: HTML5, CSS3, JavaScript, Bootstrap 5
-- **Иконки**: Font Awesome
+- **Icons**: Font Awesome
 
-## 📦 Установка
+## 📦 Installation
 
-1. **Клонируйте репозиторий**
+1. **Clone the repository**
 ```bash
 git clone <repository-url>
 cd AIRecruiter
 ```
 
-2. **Установите зависимости**
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-3. **Настройте переменные окружения**
+3. **Set up environment variables**
 ```bash
 cp env.example .env
 ```
 
-Отредактируйте `.env` файл и добавьте ваш OpenAI API ключ:
+Edit the `.env` file and add your OpenAI API key:
 ```env
 OPENAI_API_KEY=sk-your-openai-api-key-here
 PORT=3000
 ```
 
-4. **Запустите приложение**
+4. **Run the application**
 ```bash
-# Режим разработки
+# Development mode
 npm run dev
 
-# Продакшн режим
+# Production mode
 npm start
 ```
 
-5. **Откройте в браузере**
+5. **Open in browser**
 ```
 http://localhost:3000
 ```
 
-## 🎯 Как использовать
+## 🎯 How to use
 
-### Для кандидатов:
-1. Перейдите на главную страницу
-2. Нажмите "Заполнить анкету"
-3. Укажите свои данные, навыки и опыт
-4. Отправьте анкету
+### For Candidates:
+1. Go to the main page
+2. Click "Fill out the form"
+3. Enter your details, skills, and experience
+4. Submit the form
 
-### Для рекрутеров:
-1. Перейдите на главную страницу
-2. Нажмите "Начать поиск"
-3. Опишите требования к кандидату в AI-чате
-4. AI поможет уточнить критерии
-5. Используйте форму поиска для фильтрации
-6. Просматривайте подходящих кандидатов
+### For Recruiters:
+1. Go to the main page
+2. Click "Start searching"
+3. Describe the candidate requirements in the AI chat
+4. The AI will help clarify the criteria
+5. Use the search form for filtering
+6. View suitable candidates
 
-## 💬 Примеры запросов для AI
+## 💬 Example queries for the AI
 
-- "Нужен фронтенд разработчик с опытом React от 3 лет"
-- "Ищу JavaScript разработчика для стартапа"
-- "Требуется UI/UX разработчик с знанием Figma"
-- "Нужен Angular разработчик в банковскую сферу"
+- "I need a frontend developer with 3+ years of React experience"
+- "Looking for a JavaScript developer for a startup"
+- "Need a UI/UX developer with Figma knowledge"
+- "Need an Angular developer for the banking sector"
 
-AI автоматически задаст дополнительные вопросы:
-- Уровень английского языка?
-- Готовность к удаленной работе?
-- Ожидаемая зарплата?
-- Дополнительные требования?
+The AI will automatically ask additional questions:
+- English level?
+- Willingness to work remotely?
+- Expected salary?
+- Additional requirements?
 
-## 📁 Структура проекта
+## 📁 Project Structure
 
 ```
 AIRecruiter/
-├── package.json          # Зависимости и скрипты
-├── server.js             # Основной серверный файл
-├── .env                  # Переменные окружения
-├── ai_recruiter.db       # База данных SQLite (создается автоматически)
-└── public/               # Статические файлы
-    ├── index.html        # Главная страница
-    ├── candidate-form.html    # Форма кандидата
-    └── recruiter-dashboard.html # Панель рекрутера
+├── package.json          # Dependencies and scripts
+├── server.js             # Main server file
+├── .env                  # Environment variables
+├── ai_recruiter.db       # SQLite database (created automatically)
+└── public/               # Static files
+    ├── index.html        # Main page
+    ├── candidate-form.html    # Candidate form
+    └── recruiter-dashboard.html # Recruiter dashboard
 ```
 
-## 🗄️ Структура базы данных
+## 🗄️ Database Structure
 
-### Таблица `candidates`
-- `id` - Уникальный ID кандидата
-- `name` - Имя и фамилия
-- `email` - Email адрес
-- `position` - Желаемая позиция
-- `experience_years` - Опыт в годах
-- `skills` - Навыки (строка через запятую)
-- `portfolio_url` - Ссылка на портфолио
-- `resume_text` - Описание опыта
-- `created_at` - Дата создания
+### `candidates` table
+- `id` - Unique candidate ID
+- `name` - Full name
+- `email` - Email address
+- `position` - Desired position
+- `experience_years` - Years of experience
+- `skills` - Skills (comma-separated string)
+- `portfolio_url` - Link to portfolio
+- `resume_text` - Description of experience
+- `created_at` - Creation date
 
-### Таблица `recruiter_sessions`
-- `id` - ID сессии
-- `conversation_history` - История разговора (JSON)
-- `requirements` - Требования к кандидату
-- `created_at` - Дата создания
-- `updated_at` - Дата обновления
+### `recruiter_sessions` table
+- `id` - Session ID
+- `conversation_history` - Conversation history (JSON)
+- `requirements` - Candidate requirements
+- `created_at` - Creation date
+- `updated_at` - Update date
 
-### Таблица `interviews`
-- `id` - ID интервью
-- `candidate_id` - Связь с кандидатом
-- `session_id` - Связь с сессией рекрутера
-- `questions` - Вопросы интервью
-- `answers` - Ответы кандидата
-- `ai_evaluation` - Оценка AI
-- `score` - Числовая оценка
-- `status` - Статус интервью
+### `interviews` table
+- `id` - Interview ID
+- `candidate_id` - Link to candidate
+- `session_id` - Link to recruiter session
+- `questions` - Interview questions
+- `answers` - Candidate's answers
+- `ai_evaluation` - AI evaluation
+- `score` - Numeric score
+- `status` - Interview status
 
 ## 🔧 API Endpoints
 
-### Кандидаты
-- `POST /api/candidates` - Создать нового кандидата
-- `GET /api/candidates` - Получить всех кандидатов
-- `POST /api/search-candidates` - Поиск кандидатов по критериям
+### Candidates
+- `POST /api/candidates` - Create a new candidate
+- `GET /api/candidates` - Get all candidates
+- `POST /api/search-candidates` - Search for candidates by criteria
 
-### AI-Чат
-- `POST /api/recruiter/chat` - Отправить сообщение AI-ассистенту
+### AI Chat
+- `POST /api/recruiter/chat` - Send a message to the AI assistant
 
-## 🎨 Настройка интерфейса
+## 🎨 Interface Customization
 
-Система использует CSS переменные для легкой кастомизации цветов:
-- Основной градиент: `#667eea` → `#764ba2`
-- Радиус скругления: `15px`
-- Тени: `0 5px 15px rgba(0,0,0,0.1)`
+The system uses CSS variables for easy color customization:
+- Main gradient: `#667eea` → `#764ba2`
+- Border radius: `15px`
+- Shadows: `0 5px 15px rgba(0,0,0,0.1)`
 
-## 🔒 Безопасность
+## 🔒 Security
 
-- Валидация данных на сервере
-- Санитизация пользовательского ввода
-- CORS настройки
-- Переменные окружения для API ключей
+- Server-side data validation
+- User input sanitization
+- CORS settings
+- Environment variables for API keys
 
-## 📈 Развитие проекта
+## 📈 Project Development
 
-Планируемые улучшения:
-- [ ] Система уведомлений
-- [ ] Интеграция с календарем для интервью
-- [ ] Автоматическая оценка кандидатов AI
-- [ ] Экспорт отчетов
-- [ ] Интеграция с внешними job boards
-- [ ] Видео интервью
-- [ ] Тесты навыков
+Planned improvements:
+- [ ] Notification system
+- [ ] Calendar integration for interviews
+- [ ] Automatic AI-based candidate evaluation
+- [ ] Report exporting
+- [ ] Integration with external job boards
+- [ ] Video interviews
+- [ ] Skill tests
 
-## 🤝 Участие в разработке
+## 🤝 Contributing
 
-1. Форкните проект
-2. Создайте ветку для новой функции
-3. Сделайте коммит изменений
-4. Отправьте Pull Request
+1. Fork the project
+2. Create a branch for a new feature
+3. Commit your changes
+4. Submit a Pull Request
 
-## 📄 Лицензия
+## 📄 License
 
 MIT License
 
-## 🆘 Поддержка
+## 🆘 Support
 
-Если у вас возникли вопросы или проблемы:
-1. Проверьте, что OpenAI API ключ указан правильно
-2. Убедитесь, что все зависимости установлены
-3. Проверьте логи сервера в консоли
+If you have any questions or problems:
+1. Check that the OpenAI API key is specified correctly
+2. Make sure all dependencies are installed
+3. Check the server logs in the console
 
 ---
 
-**Создано с использованием LangChain JS и OpenAI GPT-3.5** 🤖 
+**Created using LangChain JS and OpenAI GPT-3.5** 🤖 

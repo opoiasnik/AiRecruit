@@ -1,27 +1,44 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Панель рекрутера - AI-Рекрутер</title>
+    <title>Recruiter Dashboard - AI Recruiter</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
         body {
             background: #f8f9fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
         }
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 20px 0;
-            margin-bottom: 30px;
+            padding: 15px 0;
+            flex-shrink: 0;
+        }
+        .chat-wrapper {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
         }
         .chat-container {
+            width: 100%;
+            max-width: 800px;
+            height: 100%;
             background: white;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            height: 600px;
             display: flex;
             flex-direction: column;
         }
@@ -38,7 +55,6 @@
             flex: 1;
             overflow-y: auto;
             padding: 20px;
-            max-height: 400px;
         }
         .message {
             margin-bottom: 15px;
@@ -62,8 +78,17 @@
         }
         .message-content {
             padding: 12px 18px;
-            max-width: 70%;
+            max-width: 80%;
             word-wrap: break-word;
+        }
+        .message-content h1, .message-content h2, .message-content h3 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #667eea;
+        }
+        .message-content ul {
+            padding-left: 20px;
+            margin-top: 10px;
         }
         .message-avatar {
             width: 35px;
@@ -74,6 +99,7 @@
             justify-content: center;
             color: white;
             font-size: 14px;
+            flex-shrink: 0;
         }
         .user-avatar {
             background: #667eea;
@@ -86,52 +112,11 @@
             border-top: 1px solid #e9ecef;
             border-radius: 0 0 15px 15px;
         }
-        .candidates-container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-top: 20px;
-        }
-        .candidate-card {
-            border: 1px solid #e9ecef;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-        }
-        .candidate-card:hover {
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
-        }
-        .skill-badge {
-            background: #667eea;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            margin: 2px;
-            display: inline-block;
-        }
-        .search-form {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .btn-primary {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border: none;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(45deg, #5a6fd8, #6a4190);
-        }
         .typing-indicator {
             display: none;
             font-style: italic;
             color: #666;
-            padding: 10px;
+            padding: 0 20px 10px;
         }
         .back-btn {
             color: white;
@@ -142,451 +127,136 @@
             opacity: 1;
             color: white;
         }
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-        .experience-0 { background: #ffeeba; color: #856404; }
-        .experience-1 { background: #d1ecf1; color: #0c5460; }
-        .experience-2 { background: #d4edda; color: #155724; }
-        .experience-3 { background: #cce7ff; color: #004085; }
-        .experience-4 { background: #e2d5f5; color: #6f42c1; }
-        .experience-5 { background: #f8d7da; color: #721c24; }
-        
-        .job-description {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 10px;
-            padding: 20px;
-            line-height: 1.6;
-            font-size: 14px;
-        }
-        
-        .job-description h2, .job-description h3 {
-            color: #667eea;
-            margin-top: 20px;
-            margin-bottom: 10px;
-        }
-        
-        .job-description ul {
-            padding-left: 20px;
-        }
-        
-        .job-description li {
-            margin-bottom: 5px;
-        }
-        
-        .loading-spinner {
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .loading-spinner i {
-            font-size: 2rem;
-            color: #667eea;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h1 class="h4 mb-0"><i class="fas fa-robot"></i> AI Recruiter</h1>
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-home"></i> Back to Main Page
+            </a>
+        </div>
+    </div>
+
+    <div class="chat-wrapper">
+        <div class="chat-container">
+            <div class="chat-header">
+                <i class="fas fa-comments"></i>
                 <div>
-                    <h1><i class="fas fa-robot"></i> AI-Рекрутер</h1>
-                    <p class="mb-0">Умная система подбора персонала</p>
+                    <h5 class="mb-0">AI Vacancy Builder</h5>
+                    <small>Let's create the perfect job description together</small>
                 </div>
-                <a href="index.html" class="back-btn">
-                    <i class="fas fa-home"></i> На главную
-                </a>
             </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="row">
-            <!-- AI-чат -->
-            <div class="col-lg-6">
-                <div class="chat-container">
-                    <div class="chat-header">
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai">
+                    <div class="message-avatar ai-avatar">
                         <i class="fas fa-robot"></i>
-                        <div>
-                            <h5 class="mb-0">AI-Ассистент рекрутера</h5>
-                            <small>Опишите ваши требования к кандидату</small>
-                        </div>
                     </div>
-                    
-                    <div class="chat-messages" id="chatMessages">
-                        <div class="message ai">
-                            <div class="message-avatar ai-avatar">
-                                <i class="fas fa-robot"></i>
-                            </div>
-                            <div class="message-content">
-                                Привет! Я AI-ассистент для подбора персонала. Опишите, какого кандидата вы ищете, и я помогу вам сформулировать требования и найти подходящих людей.
-                                
-                                Например: "Нужен фронтенд разработчик с опытом React от 3 лет"
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="typing-indicator" id="typingIndicator">
-                        AI печатает...
-                    </div>
-                    
-                    <div class="chat-input">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="messageInput" 
-                                   placeholder="Опишите ваши требования к кандидату...">
-                            <button class="btn btn-primary" id="sendButton">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
+                    <div class="message-content">
+                        Hello! I'm your AI assistant. To start building a job vacancy, please tell me the job title you are hiring for.
+                        <br><br>
+                        For example: "We are looking for a Senior Frontend Developer".
                     </div>
                 </div>
             </div>
-
-            <!-- Создание вакансии и поиск -->
-            <div class="col-lg-6">
-                <!-- Форма создания вакансии -->
-                <div class="search-form">
-                    <h5><i class="fas fa-briefcase"></i> Создать вакансию</h5>
-                    <form id="jobForm">
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label class="form-label">Название вакансии *</label>
-                                <input type="text" class="form-control" id="jobTitle" 
-                                       placeholder="Frontend Developer" required>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Опыт (лет) *</label>
-                                <select class="form-select" id="jobExperience" required>
-                                    <option value="">Выберите</option>
-                                    <option value="1">1+ лет</option>
-                                    <option value="2">2+ лет</option>
-                                    <option value="3">3+ лет</option>
-                                    <option value="4">4+ лет</option>
-                                    <option value="5">5+ лет</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Основные навыки *</label>
-                                <input type="text" class="form-control" id="jobSkills" 
-                                       placeholder="React, JavaScript, CSS" required>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-magic"></i> Создать описание вакансии
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Поиск кандидатов -->
-                <div class="search-form mt-3">
-                    <h5><i class="fas fa-search"></i> Поиск кандидатов</h5>
-                    <form id="searchForm">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Позиция</label>
-                                <input type="text" class="form-control" id="searchPosition" 
-                                       placeholder="Frontend Developer">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Мин. опыт (лет)</label>
-                                <select class="form-select" id="searchExperience">
-                                    <option value="">Любой</option>
-                                    <option value="1">1+</option>
-                                    <option value="2">2+</option>
-                                    <option value="3">3+</option>
-                                    <option value="4">4+</option>
-                                    <option value="5">5+</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Навыки</label>
-                            <input type="text" class="form-control" id="searchSkills" 
-                                   placeholder="React, JavaScript, CSS">
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search"></i> Найти кандидатов
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Сгенерированная вакансия -->
-                <div class="candidates-container" id="jobDescriptionContainer" style="display: none;">
-                    <h5><i class="fas fa-file-alt"></i> Сгенерированная вакансия</h5>
-                    <div id="jobDescriptionContent" class="job-description">
-                        <!-- Здесь будет отображаться описание вакансии -->
-                    </div>
-                    <div class="mt-3">
-                        <button class="btn btn-outline-primary" onclick="copyJobDescription()">
-                            <i class="fas fa-copy"></i> Копировать
-                        </button>
-                        <button class="btn btn-outline-success" onclick="downloadJobDescription()">
-                            <i class="fas fa-download"></i> Скачать
-                        </button>
-                    </div>
-                </div>
-
-                <div class="candidates-container">
-                    <h5><i class="fas fa-users"></i> Найденные кандидаты</h5>
-                    <div id="candidatesResults">
-                        <p class="text-muted">Используйте поиск или AI-чат для поиска кандидатов</p>
-                    </div>
+            
+            <div class="typing-indicator" id="typingIndicator">
+                AI is typing...
+            </div>
+            
+            <div class="chat-input">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="messageInput" 
+                           placeholder="Describe your requirements...">
+                    <button class="btn btn-primary" id="sendButton">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let currentSessionId = null;
-
-        // Обработка отправки сообщений в чат
-        document.getElementById('sendButton').addEventListener('click', sendMessage);
-        document.getElementById('messageInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
-        async function sendMessage() {
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatMessages = document.getElementById('chatMessages');
             const messageInput = document.getElementById('messageInput');
-            const message = messageInput.value.trim();
-            
-            if (!message) return;
-
-            // Добавляем сообщение пользователя
-            addMessage(message, 'user');
-            messageInput.value = '';
-            
-            // Показываем индикатор печати
-            showTyping(true);
-
-            try {
-                const response = await fetch('/api/recruiter/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        message: message,
-                        sessionId: currentSessionId
-                    })
-                });
-
-                const result = await response.json();
-                
-                if (response.ok) {
-                    currentSessionId = result.sessionId;
-                    addMessage(result.response, 'ai');
-                } else {
-                    addMessage('Извините, произошла ошибка. Попробуйте еще раз.', 'ai');
-                }
-            } catch (error) {
-                console.error('Ошибка чата:', error);
-                addMessage('Ошибка соединения. Проверьте подключение к интернету.', 'ai');
-            } finally {
-                showTyping(false);
-            }
-        }
-
-        function addMessage(content, sender) {
-            const messagesContainer = document.getElementById('chatMessages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
-            
-            const avatar = sender === 'user' ? 
-                '<div class="message-avatar user-avatar"><i class="fas fa-user"></i></div>' :
-                '<div class="message-avatar ai-avatar"><i class="fas fa-robot"></i></div>';
-            
-            messageDiv.innerHTML = `
-                ${avatar}
-                <div class="message-content">${content}</div>
-            `;
-            
-            messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        function showTyping(show) {
+            const sendButton = document.getElementById('sendButton');
             const typingIndicator = document.getElementById('typingIndicator');
-            typingIndicator.style.display = show ? 'block' : 'none';
-            
-            const messagesContainer = document.getElementById('chatMessages');
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
+            let sessionId = sessionStorage.getItem('recruiterSessionId');
 
-        // Обработка поиска кандидатов
-        document.getElementById('searchForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const searchData = {
-                position: document.getElementById('searchPosition').value,
-                minExperience: document.getElementById('searchExperience').value,
-                skills: document.getElementById('searchSkills').value
+            const addMessage = (content, sender) => {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', sender);
+                
+                const avatar = document.createElement('div');
+                avatar.classList.add('message-avatar', sender === 'user' ? 'user-avatar' : 'ai-avatar');
+                avatar.innerHTML = `<i class="fas ${sender === 'user' ? 'fa-user' : 'fa-robot'}"></i>`;
+
+                const messageContent = document.createElement('div');
+                messageContent.classList.add('message-content');
+                
+                // Render Markdown for AI responses
+                messageContent.innerHTML = sender === 'ai' ? marked.parse(content) : content;
+                
+                messageDiv.appendChild(avatar);
+                messageDiv.appendChild(messageContent);
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             };
 
-            try {
-                const response = await fetch('/api/search-candidates', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(searchData)
-                });
-
-                const candidates = await response.json();
-                displayCandidates(candidates);
-            } catch (error) {
-                console.error('Ошибка поиска:', error);
-                document.getElementById('candidatesResults').innerHTML = 
-                    '<p class="text-danger">Ошибка поиска кандидатов</p>';
-            }
-        });
-
-        function displayCandidates(candidates) {
-            const container = document.getElementById('candidatesResults');
-            
-            if (candidates.length === 0) {
-                container.innerHTML = '<p class="text-muted">Кандидаты не найдены</p>';
-                return;
-            }
-
-            const candidatesHtml = candidates.map(candidate => {
-                const skills = candidate.skills ? candidate.skills.split(', ').map(skill => 
-                    `<span class="skill-badge">${skill}</span>`
-                ).join('') : '';
-                
-                const experienceClass = `experience-${Math.min(candidate.experience_years, 5)}`;
-                
-                return `
-                    <div class="candidate-card">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h6 class="mb-0">${candidate.name}</h6>
-                            <span class="status-badge ${experienceClass}">
-                                ${candidate.experience_years} лет опыта
-                            </span>
-                        </div>
-                        <p class="text-muted mb-2">${candidate.position}</p>
-                        <p class="small mb-2"><i class="fas fa-envelope"></i> ${candidate.email}</p>
-                        ${candidate.portfolio_url ? 
-                            `<p class="small mb-2"><i class="fas fa-link"></i> 
-                             <a href="${candidate.portfolio_url}" target="_blank">Портфолио</a></p>` : ''}
-                        <div class="mb-2">${skills}</div>
-                        ${candidate.resume_text ? 
-                            `<p class="small text-muted">${candidate.resume_text.substring(0, 150)}...</p>` : ''}
-                        <small class="text-muted">Подал заявку: ${new Date(candidate.created_at).toLocaleDateString('ru-RU')}</small>
-                    </div>
-                `;
-            }).join('');
-
-            container.innerHTML = candidatesHtml;
-        }
-
-        // Обработка создания вакансии
-        document.getElementById('jobForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const jobData = {
-                jobTitle: document.getElementById('jobTitle').value,
-                experienceYears: document.getElementById('jobExperience').value,
-                coreSkills: document.getElementById('jobSkills').value,
-                sessionId: currentSessionId
+            const toggleTypingIndicator = (show) => {
+                typingIndicator.style.display = show ? 'block' : 'none';
+                if(show) chatMessages.scrollTop = chatMessages.scrollHeight;
             };
 
-            // Показываем индикатор загрузки
-            const container = document.getElementById('jobDescriptionContainer');
-            const content = document.getElementById('jobDescriptionContent');
-            
-            container.style.display = 'block';
-            content.innerHTML = `
-                <div class="loading-spinner">
-                    <i class="fas fa-spinner"></i>
-                    <p>Генерируем описание вакансии...</p>
-                </div>
-            `;
+            const sendMessage = async () => {
+                const message = messageInput.value.trim();
+                if (!message) return;
 
-            try {
-                const response = await fetch('/api/generate-job', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(jobData)
-                });
+                addMessage(message, 'user');
+                messageInput.value = '';
+                toggleTypingIndicator(true);
 
-                const result = await response.json();
-
-                if (response.ok) {
-                    // Форматируем и отображаем описание вакансии
-                    content.innerHTML = formatJobDescription(result.jobDescription);
+                try {
+                    const response = await fetch('/api/recruiter/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message, sessionId })
+                    });
                     
-                    // Добавляем сообщение в чат об успешном создании
-                    addMessage(`✅ Вакансия "${jobData.jobTitle}" успешно создана! Описание сгенерировано с учетом нашего разговора.`, 'ai');
+                    toggleTypingIndicator(false);
                     
-                    // Очищаем форму
-                    this.reset();
-                } else {
-                    content.innerHTML = `<p class="text-danger">❌ ${result.error || 'Ошибка создания вакансии'}</p>`;
+                    if (!response.ok) {
+                        addMessage('Sorry, an error occurred. Please try again.', 'ai');
+                        return;
+                    }
+
+                    const data = await response.json();
+                    
+                    if (data.sessionId) {
+                        sessionId = data.sessionId;
+                        sessionStorage.setItem('recruiterSessionId', sessionId);
+                    }
+                    
+                    addMessage(data.message, 'ai');
+
+                } catch (error) {
+                    toggleTypingIndicator(false);
+                    addMessage('Failed to connect to the server. Please check your connection.', 'ai');
+                    console.error('Chat error:', error);
                 }
-            } catch (error) {
-                console.error('Ошибка:', error);
-                content.innerHTML = '<p class="text-danger">❌ Ошибка сети. Попробуйте позже.</p>';
-            }
-        });
-
-        // Функция для форматирования описания вакансии
-        function formatJobDescription(description) {
-            return description
-                .replace(/\*\*(.*?)\*\*/g, '<h3>$1</h3>')
-                .replace(/\n- /g, '\n• ')
-                .replace(/\n/g, '<br>')
-                .replace(/• /g, '<li>')
-                .replace(/<br><li>/g, '</li><li>')
-                .replace(/(<li>.*?)(<br>)/g, '$1</li>$2')
-                .replace(/(<h3>.*?<\/h3>)/g, '$1<ul>')
-                .replace(/(<\/li><br><h3>)/g, '</ul>$1');
-        }
-
-        // Функция для копирования описания вакансии
-        function copyJobDescription() {
-            const content = document.getElementById('jobDescriptionContent').innerText;
-            navigator.clipboard.writeText(content).then(() => {
-                alert('Описание вакансии скопировано в буфер обмена!');
-            });
-        }
-
-        // Функция для скачивания описания вакансии
-        function downloadJobDescription() {
-            const content = document.getElementById('jobDescriptionContent').innerText;
-            const jobTitle = document.getElementById('jobTitle').value || 'Вакансия';
+            };
             
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `${jobTitle.replace(/[^a-zA-Zа-яА-Я0-9]/g, '_')}.txt`;
-            link.click();
-        }
+            sendButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
 
-        // Загрузка всех кандидатов при загрузке страницы
-        window.addEventListener('load', async function() {
-            try {
-                const response = await fetch('/api/candidates');
-                const candidates = await response.json();
-                displayCandidates(candidates);
-            } catch (error) {
-                console.error('Ошибка загрузки кандидатов:', error);
+            // If there's no session, send an initial empty message to get the first question
+            if (!sessionId) {
+                sendMessage();
             }
         });
     </script>
