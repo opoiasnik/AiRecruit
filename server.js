@@ -1,9 +1,18 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
-const OpenAI = require('openai');
+const { OpenAI } = require('openai');
+
+// OpenAI API Key Loading
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+if (!OPENAI_API_KEY) {
+    console.error('❌ Missing OpenAI API key. Make sure to set the OPENAI_API_KEY environment variable in a .env file.');
+    process.exit(1);
+}
+console.log('🔑 OpenAI API key loaded successfully.');
 
 // Fetch polyfill for Node.js versions < 18
 const fetch = (() => {
@@ -14,16 +23,6 @@ const fetch = (() => {
         return null;
     }
 })();
-
-// OpenAI API Key - захардкожен для простоты
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-
-console.log('🔑 Using hardcoded OpenAI API key');
-
-// OpenAI Configuration
-const openai = new OpenAI({
-    apiKey: OPENAI_API_KEY
-});
 
 // LangChain imports (Keep them for now, might be useful for prompts)
 const { ChatPromptTemplate } = require('@langchain/core/prompts');
@@ -842,8 +841,8 @@ app.post('/api/recruiter/chat', async (req, res) => {
                 session.status = 'completed';
                 session.webhookResponse = webhookResponse;
                 session.webhookSuccess = webhookSuccess;
-
-                return res.json({ 
+                
+                return res.json({
                     sessionId: session.id, 
                     message: finalMessage,
                     isComplete: true,
@@ -860,7 +859,7 @@ app.post('/api/recruiter/chat', async (req, res) => {
                 conversationHistory.push({ role: 'assistant', content: aiResponse.message });
                 session.status = 'completed';
                 
-                return res.json({ 
+                 return res.json({
                     sessionId: session.id, 
                     message: aiResponse.message + '\n\n⚠️ Job description generation failed. Please try again.',
                     isComplete: true,
@@ -869,16 +868,16 @@ app.post('/api/recruiter/chat', async (req, res) => {
                 });
             }
         }
-        
+
         // Add AI response to conversation history
         conversationHistory.push({ role: 'assistant', content: aiResponse.message });
         
         // Update session status
         session.status = aiResponse.isComplete ? 'completed' : 'collecting';
-
+        
         res.json({
             sessionId: session.id,
-            message: aiResponse.message, 
+            message: aiResponse.message,
             isComplete: aiResponse.isComplete,
             vacancy: session.vacancy,
             completionPercentage: aiResponse.completionPercentage || 0
